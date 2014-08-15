@@ -13,13 +13,13 @@ var config = {
   consumer_secret: '4IIpSfjPbvUNEN3scPogNVuC5Wbseabn2T97kRR1tms',
   access_token_key: '2296757942-WIkUaGQyHxHsSe6W4KsWnXStZo9Up6cw5LLqsQq',
   access_token_secret: 'esTngppPSimuksCGoeb3UUjkDtYawzgGy3adwiO6eP1tX'
-};
+}; // TODO env variables?
 
 var twitter = new Twitter(config);
-var PHOTOS_PATH = path.join(__dirname, '..', '..', '..', 'public', 'images', 'speakers');
+var PHOTOS_PATH = path.join(__dirname, '..', '..', 'public', 'images', 'speakers');
 // TODO there must be a better way to build the path
 
-var image = module.exports;
+var profileImage = module.exports;
 
 function findImage(speaker, cb) {
   if (speaker.twitter) {
@@ -35,7 +35,7 @@ function deleteFile(location, err) {
   fs.unlink(location);
 }
 
-image.saveFile = function(url, destination){
+profileImage.saveFile = function(url, destination){
   var file = fs.createWriteStream(destination);
   
   http.get(url, function(response) {
@@ -53,30 +53,31 @@ image.saveFile = function(url, destination){
   });
 };
 
-image.exists = function(name) {
-  var fname = image.imagify(name);
+profileImage.exists = function(name) {
+  var fname = profileImage.imagify(name);
   return !!fs.existsSync(path.join(PHOTOS_PATH, fname));
 };
 
-image.imagify = function(name) {
+profileImage.imagify = function(name) {
   // TODO is this always a jpg? find out
   return name.trim().toLowerCase().replace(' ', '') + '.jpg';
 };
 
-image.download = function(speaker, cb) {
-  var fname = image.imagify(speaker.name);
+profileImage.download = function(speaker, cb) {
+  var fname = profileImage.imagify(speaker.name);
   var destination = path.join(PHOTOS_PATH, fname);
   findImage(speaker, function(response){
     if (response){
       cb('success');
-      image.saveFile(response, destination);
-    } else { cb('failed'); }
+      profileImage.saveFile(response, destination);
+    } else { cb('failed'); } // TODO fail with more details
   });
 };
 
-image.append = function(speaker) {
+profileImage.append = function(speaker) {
+  var fname = profileImage.imagify(speaker.name);
   // filename of image is
-  if (image.exists(speaker.name)) {
+  if (profileImage.exists(speaker.name)) {
     return _.extend({ image: fname }, speaker);
   }
 

@@ -4,8 +4,9 @@
   "description": "saves profile images from twitter/gravatar",
   "main": "index.js",
   "scripts": {
+    "pretest": "jshint",
     "test": "mocha -R test.js",
-    "postinstall" : "bin/runner.js" 
+    "postinstall" : "node ./runner.js" 
   },
   "repository": {
     "type": "git",
