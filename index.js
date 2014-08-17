@@ -35,7 +35,7 @@ function deleteFile(location, err) {
   fs.unlink(location);
 }
 
-profileImage.saveFile = function(url, destination){
+function saveFile(url, destination){
   var file = fs.createWriteStream(destination);
   
   http.get(url, function(response) {
@@ -53,9 +53,10 @@ profileImage.saveFile = function(url, destination){
   });
 };
 
-profileImage.exists = function(name) {
+profileImage.exists = function(name, destination) {
+  var dest = destination || PHOTOS_PATH;
   var fname = profileImage.imagify(name);
-  return !!fs.existsSync(path.join(PHOTOS_PATH, fname));
+  return !!fs.existsSync(path.join(dest, fname));
 };
 
 profileImage.imagify = function(name) {
@@ -69,15 +70,15 @@ profileImage.download = function(speaker, cb) {
   findImage(speaker, function(response){
     if (response){
       cb('success');
-      profileImage.saveFile(response, destination);
+      saveFile(response, destination);
     } else { cb('failed'); } // TODO fail with more details
   });
 };
 
-profileImage.append = function(speaker) {
+profileImage.append = function(speaker, destination) {
   var fname = profileImage.imagify(speaker.name);
   // filename of image is
-  if (profileImage.exists(speaker.name)) {
+  if (profileImage.exists(speaker.name, destination)) {
     return _.extend({ image: fname }, speaker);
   }
 
